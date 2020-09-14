@@ -14,19 +14,25 @@ class Game:
         self.window = pygame.display.set_mode((window_width, window_height))
         self.clock = pygame.time.Clock()        
         self.field = Field(w, h, sc)
-        self.move = Move(100, 100)
+        self.move = Move(int(w*sc/2 + sc), int(h*sc/2 + sc), sc)
         
     def run(self):
         while(True):
             self.clock.tick(30)
             keys = pygame.key.get_pressed()
             events = pygame.event.get()
+            
             for event in events:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    print('MOVE')
+                    self.move.make(self.window, pygame.mouse.get_pos(), 35)
+                    
             self.window.fill((255, 255,255))       
             self.field.show(self.window)
+            self.move.show_ball(self.window)
             self.move.display_moves(self.window, 35)
             pygame.display.update()
             
