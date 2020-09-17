@@ -20,7 +20,7 @@ class Move:
     def __init__(self, x, y, sc):
         self.start = (round_to_nearest(x, sc), round_to_nearest(y, sc))
         self.pos = (x, y)
-        self.next_pos = None
+        self.steps = [self.pos]
     
     def show(self, window, sc, field):
         mouse_pos = pygame.mouse.get_pos()
@@ -31,37 +31,38 @@ class Move:
             if rect.collidepoint(point):
                 pygame.draw.circle(window, (200, 150, 150), point, 4)
         pygame.draw.circle(window, (0, 0, 0), self.pos, 4)
-        if self.next_pos != None:
-            pygame.draw.line(window, (255, 200, 200), self.pos, self.next_pos, 4)
+        if len(self.steps) > 1:
+            for i in range(1, len(self.steps)):
+                pygame.draw.line(window, (255, 200, 200), self.steps[i - 1], self.steps[i], 4)
         
     def make(self, window, mouse_pos, sc, points):
-        x1 = round_to_nearest(mouse_pos[0], sc)
-        y1 = round_to_nearest(mouse_pos[1], sc)
-        x2 = self.pos[0]
-        y2 = self.pos[1]
-        line_length = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+        x = round_to_nearest(mouse_pos[0], sc)
+        y = round_to_nearest(mouse_pos[1], sc)
+        prev_x = self.pos[0]
+        prev_y = self.pos[1]
+        
+        if x == prev_x and y == prev_y: return
+        
+        line_length = math.sqrt((prev_x - x)**2 + (prev_y - y)**2)
 
-        if line_length > 1.5*sc:
-            return
+        if line_length > 1.5*sc: return
+                
+        start_point = find_point_in_array(points, (prev_x, prev_y))
+        end_point   = find_point_in_array(points, (x, y))
         
-        point = find_point_in_array(points, (x1, y1))
+        lon   = np.sign(x - prev_x)
+        lat   = np.sign(y - prev_y) 
         
-        horizontal = np.sign(x1 - x2)
-        vertical   = np.sign(y1 - y2)      
-        directions = {-1:'S', 0:'', 1:'N'}
-        s1 = directions[vertical]
-        directions = {-1:'E', 0:'', 1:'W'}
-        s2 = directions[horizontal]
-        if s1 + s2 == '':
-            return
+        lat_dict = {-1:'S', 0:'', 1:'N'}
+        lon_dict = {-1:'E', 0:'', 1:'W'}
         
-        if point.moves[s1 + s2]:
-            self.next_pos = self.pos
-            self.pos = (x1, y1)
-            point.moves[s1 + s2] = False
-            print(s1 + s2)
-            print(point.moves[s1 + s2])
-            print(point.moves)
+        move_dir     = lat_dict[lat] + lon_dict[lon]
+        move_dir_rev = lat_dict[-lat] + lon_dict[-lon]
+        if end_point.moves[move_dir]:
+            self.pos = (x, y)
+            self.steps.append(self.pos)
+            end_point.moves[move_dir]       = False
+            start_point.moves[move_dir_rev] = False
         
 
         

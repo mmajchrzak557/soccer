@@ -19,7 +19,7 @@ class Game:
     def run(self):
         while(True):
             self.clock.tick(30)
-            keys = pygame.key.get_pressed()
+
             events = pygame.event.get()
             
             for event in events:
