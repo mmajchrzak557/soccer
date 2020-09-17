@@ -5,6 +5,7 @@ class Point:
         self.x = x
         self.y = y
         self.ptype = point_type
+        self.moves = {'N':True, 'NE':True, 'E':True, 'SE':True, 'S':True,'SW':True, 'W':True, 'NW':True}
     
     def show(self, window):
         if self.ptype == 0:

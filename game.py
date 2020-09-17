@@ -27,13 +27,11 @@ class Game:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    print('MOVE')
-                    self.move.make(self.window, pygame.mouse.get_pos(), 35)
+                    self.move.make(self.window, pygame.mouse.get_pos(), 35, self.field.points)
                     
             self.window.fill((255, 255,255))       
             self.field.show(self.window)
-            self.move.show_ball(self.window)
-            self.move.display_moves(self.window, 35)
+            self.move.show(self.window, 35, self.field)
             pygame.display.update()
             
 game = Game()

@@ -7,6 +7,7 @@ class Field:
     def __init__(self, w, h, sc):
         self.points = self.get_points_array(w, h, sc)
         self.lines  = self.get_lines()
+        self.rects  = self.get_rects(w, h, sc)
     
     def get_numpy_array(self, w, h):
         if w % 2 != 0 or h % 2 != 0:            
@@ -43,6 +44,7 @@ class Field:
                 element = base_array[i, j]
                 new_array[i, j] = Point(j * sc + sc, i * sc + sc, element)
         return new_array
+    
     def get_lines(self):
         lines = []
         for i in range(self.points.shape[0]):
@@ -57,6 +59,17 @@ class Field:
                 if point.ptype == 3:
                     lines.append((point.x, point.y))
         return lines
+    
+    def get_rects(self, w, h, sc):        
+        l = int((w - 2)/2)
+        left = (l + 1)*sc
+        main = pygame.Rect((sc, sc*2, w*sc + 1, (h - 2)*sc + 1))
+        top_goal = pygame.Rect((left, sc, 2*sc + 1, sc + 1))
+        bottom_goal = pygame.Rect((left, h*sc, 2*sc + 1, sc + 1))
+        return [main, top_goal, bottom_goal]
+    
+    def show_rect(self, window):
+        pygame.draw.rect(window, (0, 0, 0), self.rect)
                 
     def show(self, window):
         for i in range(self.points.shape[0]):
