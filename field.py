@@ -39,10 +39,17 @@ class Field:
     def get_points_array(self, w, h, sc):
         base_array = self.get_numpy_array(w, h)
         new_array = np.empty(base_array.shape, dtype=object)
-        for i in range(base_array.shape[0]):
-            for j in range(base_array.shape[1]):
+        rows = base_array.shape[0]
+        cols = base_array.shape[1]
+        for i in range(rows):
+            row_condition = i == 1 or i == 0 or i == rows - 2 or i == rows - 1
+            for j in range(cols):
+                col_condition = j == 0 or j == cols - 1
+                wall = True if row_condition or col_condition else False
                 element = base_array[i, j]
-                new_array[i, j] = Point(j * sc + sc, i * sc + sc, element)
+                new_array[i, j] = Point(j * sc + sc, i * sc + sc, element, wall)
+        new_array[1, cols//2].wall = False
+        new_array[rows - 2, cols//2].wall = False
         return new_array
     
     def get_lines(self):
@@ -67,9 +74,6 @@ class Field:
         top_goal = pygame.Rect((left, sc, 2*sc + 1, sc + 1))
         bottom_goal = pygame.Rect((left, h*sc, 2*sc + 1, sc + 1))
         return [main, top_goal, bottom_goal]
-    
-    def show_rect(self, window):
-        pygame.draw.rect(window, (0, 0, 0), self.rect)
                 
     def show(self, window):
         for i in range(self.points.shape[0]):
